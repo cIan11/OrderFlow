@@ -9,13 +9,15 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.javabegin.backend.orderflow.enums.OrderStatus;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -37,13 +39,13 @@ public class Order extends BaseEntity {
     private OrderStatus status = OrderStatus.NEW;
 
     @Column(name = "total_price")
-    private BigDecimal totalPrice = new BigDecimal(0);
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     @Column(name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems = new ArrayList<>();

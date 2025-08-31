@@ -29,7 +29,6 @@ public class Product {
 
     private BigDecimal price;
 
-
     private String category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

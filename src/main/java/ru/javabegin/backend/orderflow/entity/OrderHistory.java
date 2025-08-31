@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "order_history")
 @Getter
@@ -24,4 +26,7 @@ public class OrderHistory extends BaseEntity {
 
     @Column(name = "new_status")
     private String newStatus;
+
+    @Column(name = "changed_at")
+    private LocalDateTime changedAt;
 }
