@@ -1,5 +1,6 @@
 package ru.javabegin.backend.orderflow.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +14,11 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("tenants/{tenantId}/products")
 public class ProductController {
 
     private ProductService productService;
-
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
 
     //CRUD для продукта
 
@@ -52,7 +50,7 @@ public class ProductController {
             @PathVariable Long tenantId,
             @RequestBody Product product){
         // Проверка обязательных полей
-        if(product.getId()==null){
+        if(product.getId()!=null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id не должен быть указан");
         }
 
@@ -75,8 +73,9 @@ public class ProductController {
         Tenant tenant = new Tenant();
         tenant.setId(tenantId);
         product.setTenant(tenant);
+        //Нужно добавить проверку наличия такого тенанта
 
-        return ResponseEntity.ok(productService.createProduct(product));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(product));
     }
 
     //4) Изменение продукта

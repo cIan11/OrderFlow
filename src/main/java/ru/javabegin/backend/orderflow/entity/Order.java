@@ -25,7 +25,6 @@ import java.util.Objects;
 public class Order extends BaseEntity {
     //done
     //Это заказ пользователя
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", referencedColumnName = "id")
     private Tenant tenant;
