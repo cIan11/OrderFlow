@@ -22,22 +22,21 @@ public class ProductService {
     }
 
     public Product getProductById(Long tenantId,Long productId){
-        return productRepository.findByIdAndTenantId(tenantId, productId)
+        return productRepository.findByIdAndTenantId(tenantId, productId);
                 //Выкинем ошибку, если такого id нет
-                .orElseThrow(()->new EntityNotFoundException("Product not found with id " + productId));
     }
 
     public Product createProduct(Product product){
         return productRepository.save(product);
     }
 
-    public Product updateProduct(Long tenantId, Long productId, Product product){
+    public Product updateProduct(Long tenantId, Long id,Product product){
+        productRepository.findByIdAndTenantId(tenantId, id);
         return productRepository.save(product);
     }
 
     public void deleteProductById(Long tenantId, Long productId){
-       Product product = productRepository.findByIdAndTenantId(tenantId,productId)
-               .orElseThrow(()->new EntityNotFoundException("Product not found with id " + productId));
+       Product product = productRepository.findByIdAndTenantId(tenantId,productId);
        productRepository.delete(product);
     }
 

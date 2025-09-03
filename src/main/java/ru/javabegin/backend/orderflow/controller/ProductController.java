@@ -87,7 +87,7 @@ public class ProductController {
         //Тут проверка на поля
 // Проверка обязательных полей
         if(product.getId()==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id не должен быть указан");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id должен быть указан");
         }
 
         if (product.getName() == null || product.getName().trim().isEmpty()) {
