@@ -1,0 +1,10 @@
+package ru.javabegin.backend.orderflow.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.javabegin.backend.orderflow.entity.Order;
+
+@Repository
+public interface OrderRepository extends JpaRepository<Order, Long> {
+
+}

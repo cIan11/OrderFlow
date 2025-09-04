@@ -84,8 +84,8 @@ public class ProductController {
             @PathVariable Long tenantId,
             @PathVariable Long productId,
             @RequestBody Product product){
-        //Тут проверка на поля
-// Проверка обязательных полей
+
+        // Проверка обязательных полей
         if(product.getId()==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id должен быть указан");
         }

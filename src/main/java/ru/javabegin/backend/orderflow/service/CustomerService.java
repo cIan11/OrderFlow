@@ -35,7 +35,7 @@ public class CustomerService {
     public Customer save(Customer customer){
         return customerRepository.save(customer);
     }
-    //Оно вообще работает?? Че за дрянь
+    //Оно вообще работает??
     public void delete(Long tenantId, Long id){
         Customer customer = customerRepository.findByTenantIdAndId(tenantId, id)
                         .orElseThrow(()->new NoSuchElementException("Customer not found"));

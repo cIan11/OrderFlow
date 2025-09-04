@@ -18,7 +18,7 @@ public class CustomerController {
     private CustomerService customerService;
 
     //1) Получить пользователей для магазина
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Customer>> getAllCustomers(@PathVariable Long tenantId){
         return ResponseEntity.ok(customerService.getAllCustomers(tenantId));
     }
@@ -83,7 +83,6 @@ public class CustomerController {
             return new ResponseEntity("Customer does not belong to this tenant", HttpStatus.BAD_REQUEST);
         }
 
-        // Обновляем поля (кроме tenant)
         existingCustomer.setName(customer.getName());
         existingCustomer.setEmail(customer.getEmail());
         existingCustomer.setPhoneNumber(customer.getPhoneNumber());
