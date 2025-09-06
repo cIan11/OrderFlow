@@ -8,6 +8,7 @@ import ru.javabegin.backend.orderflow.entity.Order;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -15,18 +16,18 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(value = "select o from Order o where " +
             "o.tenant.id = :tenantId and" +
             "(:status is null or o.status=:status) and" +
-            "(o.customer.id is null or o.customer.id = :customerId) and" +
-            "(:from is null or o.createdAt>=:dateFrom) and" +
-            "(:to is null or o.createdAt<=:dateTo)"
+            "(:customerId is null or o.customer.id = :customerId) and" +
+            "(:dateFrom is null or o.createdAt>=:dateFrom) and" +
+            "(:dateTo is null or o.createdAt<=:dateTo)"
     )
     List<Order> findByParams(
             @Param("tenantId") Long tenantId,
             @Param("status") String status,
             @Param("customerId") Long customerId,
-            @Param("from") LocalDateTime dateFrom,
-            @Param("to") LocalDateTime dateTo
+            @Param("dateFrom") LocalDateTime dateFrom,
+            @Param("dateTo") LocalDateTime dateTo
     );
-    Order findByTenantIdAndId(Long tenantId, Long id);
+    Optional<Order> findByTenantIdAndId(Long tenantId, Long id);
 
     boolean existsByTenantIdAndId(Long tenantId, Long id);
 

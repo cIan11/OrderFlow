@@ -22,8 +22,7 @@ public class ProductService {
     }
 
     public Product getProductById(Long tenantId,Long productId){
-        return productRepository.findByIdAndTenantId(tenantId, productId);
-                //Выкинем ошибку, если такого id нет
+        return productRepository.findByIdAndTenantId(tenantId, productId).get();
     }
 
     public Product createProduct(Product product){
@@ -36,7 +35,7 @@ public class ProductService {
     }
 
     public void deleteProductById(Long tenantId, Long productId){
-       Product product = productRepository.findByIdAndTenantId(tenantId,productId);
+       Product product = productRepository.findByIdAndTenantId(tenantId,productId).get();
        productRepository.delete(product);
     }
 

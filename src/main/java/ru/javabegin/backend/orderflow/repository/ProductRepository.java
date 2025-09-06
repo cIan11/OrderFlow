@@ -12,5 +12,5 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     List<Product> findByTenantIdOrderByNameAsc(Long tenantId); //Найти продукты по id магазина
     List<Product> findByTenantIdAndCategoryOrderByNameAsc(Long tenantId, String category); //Найти продукты по id магазина и категории
-    Product findByIdAndTenantId(Long tenantId, Long productId); //Найти продукт по его id и id магазина
+    Optional<Product> findByIdAndTenantId(Long tenantId, Long productId); //Найти продукт по его id и id магазина
 }

@@ -29,7 +29,15 @@ public class CustomerController {
     public ResponseEntity<Customer> getCustomerById(
             @PathVariable Long tenantId,
             @PathVariable Long id){
-        Customer customer = customerService.findById(tenantId,id);
+
+        Customer customer =null;
+        try {
+            customer = customerService.findById(tenantId,id);
+        } catch (NoSuchElementException e) { // если объект не будет найден
+            e.printStackTrace();
+            return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_FOUND);
+        }
+
         return ResponseEntity.ok(customer);
     }
 
@@ -43,10 +51,10 @@ public class CustomerController {
             return new ResponseEntity("redundant param: id MUST be null",HttpStatus.BAD_REQUEST);
         }
         if(customer.getName()==null || customer.getName().trim().isEmpty()) {
-            return new ResponseEntity("Tenant name must not be empty",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Customer name must not be empty",HttpStatus.BAD_REQUEST);
         }
         if (customer.getEmail()==null || customer.getEmail().trim().isEmpty()) {
-            return new ResponseEntity("Tenant email must not be empty",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Customer email must not be empty",HttpStatus.BAD_REQUEST);
         }
         //Нужен ли телефон?
         //Присвоение тенанта
@@ -69,13 +77,10 @@ public class CustomerController {
             return new ResponseEntity("ID must be provided for update",HttpStatus.BAD_REQUEST);
         }
         if(customer.getName()==null || customer.getName().trim().isEmpty()) {
-            return new ResponseEntity("Tenant name must not be empty",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Customer name must not be empty",HttpStatus.BAD_REQUEST);
         }
         if (customer.getEmail()==null || customer.getEmail().trim().isEmpty()) {
-            return new ResponseEntity("Tenant email must not be empty",HttpStatus.BAD_REQUEST);
-        }
-        if (!customer.getTenant().getId().equals(tenantId)) {
-            return new ResponseEntity("Customer does not belong to this tenant", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Customer email must not be empty",HttpStatus.BAD_REQUEST);
         }
 
         Customer existingCustomer = customerService.findById(tenantId, customer.getId());
@@ -99,7 +104,7 @@ public class CustomerController {
         try {
             customerService.delete(tenantId,id);
         } catch (NoSuchElementException e) {
-            return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity(HttpStatus.OK);
     }

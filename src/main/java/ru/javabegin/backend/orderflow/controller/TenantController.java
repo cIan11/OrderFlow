@@ -36,14 +36,27 @@ public class TenantController {
         return ResponseEntity.ok(tenant);
     }
 
-    @GetMapping
+    //Объединить эти два метода
+    @GetMapping("/byName")
     public ResponseEntity<Tenant> getTenantByName(@RequestParam String name){
-        return ResponseEntity.ok(tenantService.findByName(name));
+        Tenant tenant = null;
+        try {
+            tenant = tenantService.findByName(name);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity("Tenant with name: "+name+" not found",HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(tenant);
     }
 
-    @GetMapping
+    @GetMapping("/byDomain")
     public ResponseEntity<Tenant> getTenantByDomain(@RequestParam String domain){
-        return ResponseEntity.ok(tenantService.findByDomain(domain));
+        Tenant tenant = null;
+        try {
+            tenant = tenantService.findByDomain(domain);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity("Tenant with domain: "+domain+" not found",HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(tenant);
     }
 
     //3) Создать магазин no
@@ -52,15 +65,15 @@ public class TenantController {
         //Проверка полей
         //id
         if(tenant.getId() != null && tenant.getId() != 0){
-            return new ResponseEntity("redundant param: id MUST be null", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity("redundant param: id MUST be null", HttpStatus.BAD_REQUEST);
         }
         //name
         if(tenant.getName() == null || tenant.getName().trim().length() == 0){
-            return new ResponseEntity("Tenant name must not be empty", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity("Tenant name must not be empty", HttpStatus.BAD_REQUEST);
         }
         //domain
         if (tenant.getDomain() == null || tenant.getDomain().trim().length() == 0){
-            return new ResponseEntity("Tenant domain must not be empty", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity("Tenant domain must not be empty", HttpStatus.BAD_REQUEST);
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(tenantService.save(tenant));
@@ -93,7 +106,7 @@ public class TenantController {
             tenantService.delete(id);
         } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();
-            return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity("id=" + id + " not found", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(HttpStatus.OK);
     }

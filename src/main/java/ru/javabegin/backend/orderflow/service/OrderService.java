@@ -26,7 +26,7 @@ public class OrderService {
         return orderRepository.findById(id).get();
     }
     public Order getOrder(Long tenantId, Long orderId) {
-        return orderRepository.findByTenantIdAndId(tenantId, orderId);
+        return orderRepository.findByTenantIdAndId(tenantId, orderId).get();
     }
 
     public Order save(Order order) {
@@ -34,7 +34,7 @@ public class OrderService {
     }
 
     public void delete(Long tenantId, Long orderId) {
-        Order order = orderRepository.findByTenantIdAndId(tenantId, orderId);
+        Order order = orderRepository.findByTenantIdAndId(tenantId, orderId).get();
         orderRepository.delete(order);
     }
 

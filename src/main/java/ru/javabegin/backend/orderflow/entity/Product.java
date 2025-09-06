@@ -17,10 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Product extends  BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Tenant tenant;

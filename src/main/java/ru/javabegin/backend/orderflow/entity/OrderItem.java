@@ -19,7 +19,7 @@ public class OrderItem extends BaseEntity {
     //Нужно для сохранения цены товара на момент покупки.
     //Учитываем, что стоимость товара может поменяться
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 

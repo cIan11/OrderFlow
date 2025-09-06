@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import ru.javabegin.backend.orderflow.entity.Product;
 import ru.javabegin.backend.orderflow.entity.Tenant;
@@ -12,6 +11,7 @@ import ru.javabegin.backend.orderflow.service.ProductService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @AllArgsConstructor
@@ -40,7 +40,14 @@ public class ProductController {
     public ResponseEntity<Product> getProductById(
             @PathVariable Long tenantId,
             @PathVariable Long productId){
-        Product product = productService.getProductById(tenantId, productId);
+        Product product = null;
+        try {
+             product = productService.getProductById(tenantId, productId);
+        } catch (NoSuchElementException e) { // если объект не будет найден
+            e.printStackTrace();
+            return new ResponseEntity("id=" + productId + " not found", HttpStatus.NOT_FOUND);
+        }
+
         return ResponseEntity.ok(product);
     }
 
@@ -79,7 +86,7 @@ public class ProductController {
     }
 
     //4) Изменение продукта
-    @PutMapping("{productId}")
+    @PutMapping("/{productId}")
     public ResponseEntity<?> updateProduct(
             @PathVariable Long tenantId,
             @PathVariable Long productId,
@@ -109,7 +116,7 @@ public class ProductController {
     }
 
     //5) Удаление продукта
-    @DeleteMapping("{productId}")
+    @DeleteMapping("/{productId}")
     public ResponseEntity<Product> deleteProduct(
             @PathVariable Long tenantId,
             @PathVariable Long productId){
@@ -118,7 +125,7 @@ public class ProductController {
             productService.deleteProductById(tenantId, productId);
         } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();
-            return new ResponseEntity("id=" + productId + " not found", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity("id=" + productId + " not found", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.noContent().build();
     }
