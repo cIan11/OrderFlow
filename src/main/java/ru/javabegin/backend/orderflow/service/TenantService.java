@@ -28,6 +28,9 @@ public class TenantService {
     public Tenant findById(Long id){
         return tenantRepository.findById(id).get();
     }
+    public boolean existsById(Long tenantId) {
+        return tenantRepository.existsById(tenantId);
+    }
 
     public Tenant save(Tenant tenant){
         return tenantRepository.save(tenant);

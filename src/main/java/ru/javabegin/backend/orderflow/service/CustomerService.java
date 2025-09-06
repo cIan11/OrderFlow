@@ -35,6 +35,10 @@ public class CustomerService {
     public Customer save(Customer customer){
         return customerRepository.save(customer);
     }
+
+    public boolean existsByTenantIdAndId(Long tenantId, Long customerId) {
+        return customerRepository.existsByTenantIdAndId(tenantId, customerId);
+    }
     //Оно вообще работает??
     public void delete(Long tenantId, Long id){
         Customer customer = customerRepository.findByTenantIdAndId(tenantId, id)
