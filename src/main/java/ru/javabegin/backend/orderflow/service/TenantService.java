@@ -18,11 +18,11 @@ public class TenantService {
     }
 
     public Tenant findByName(String name){
-        return tenantRepository.findByName(name);
+        return tenantRepository.findByName(name).get();
     }
 
     public Tenant findByDomain(String domain){
-        return tenantRepository.findByDomain(domain);
+        return tenantRepository.findByDomain(domain).get();
     }
 
     public Tenant findById(Long id){
@@ -33,9 +33,6 @@ public class TenantService {
     }
 
     public Tenant save(Tenant tenant){
-        return tenantRepository.save(tenant);
-    }
-    public Tenant update(Tenant tenant){
         return tenantRepository.save(tenant);
     }
     public void delete(Long id){

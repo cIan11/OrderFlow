@@ -35,7 +35,7 @@ public class Order extends BaseEntity {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private OrderStatus status = OrderStatus.NEW;
+    private OrderStatus status = OrderStatus.CART;
 
     @Column(name = "total_price")
     private BigDecimal totalPrice = BigDecimal.ZERO;
@@ -51,4 +51,7 @@ public class Order extends BaseEntity {
 
     @OneToMany(mappedBy = "order")
     private List<OrderHistory> orderHistory = new ArrayList<>();
+
+
+
 }

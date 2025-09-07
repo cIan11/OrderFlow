@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.javabegin.backend.orderflow.enums.ItemStatus;
+import ru.javabegin.backend.orderflow.enums.OrderStatus;
 
 import java.math.BigDecimal;
 
@@ -28,6 +29,7 @@ public class OrderItem extends BaseEntity {
     private Product product;
 
     private Integer quantity;
+
     //цена на момент покупки
     private BigDecimal price;
 

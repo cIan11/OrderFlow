@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface TenantRepository extends JpaRepository<Tenant, Long> {
-        Tenant findByName(String name);
-        Tenant findByDomain(String domain);
+        Optional<Tenant> findByName(String name);
+        Optional<Tenant> findByDomain(String domain);
 }

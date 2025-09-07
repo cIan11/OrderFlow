@@ -21,16 +21,15 @@ public class ProductService {
         return productRepository.findByTenantIdAndCategoryOrderByNameAsc(tenantId,category);
     }
 
-    public Product getProductById(Long tenantId,Long productId){
-        return productRepository.findByIdAndTenantId(tenantId, productId).get();
+    public Product getProductById(Long productId,Long tenantId){
+        return productRepository.findByIdAndTenantId(productId,tenantId).get();
     }
 
     public Product createProduct(Product product){
         return productRepository.save(product);
     }
 
-    public Product updateProduct(Long tenantId, Long id,Product product){
-        productRepository.findByIdAndTenantId(tenantId, id);
+    public Product updateProduct(Product product){
         return productRepository.save(product);
     }
 

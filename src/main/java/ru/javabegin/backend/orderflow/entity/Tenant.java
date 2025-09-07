@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,9 +26,8 @@ public class Tenant extends BaseEntity {
 
     private String domain;
 
-    private LocalDateTime createdAt;
-
-    @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "tenant")
+    //Тут проперти поставить
     private List<Product> products = new ArrayList<>();
 
     @Override

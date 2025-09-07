@@ -42,6 +42,7 @@ public class OrderController {
             return new ResponseEntity<>("Tenant not found", HttpStatus.NOT_FOUND);
         }
 
+        // Проверка customer если указан
         if (customerId != null && !customerService.existsByTenantIdAndId(tenantId, customerId)) {
             return new ResponseEntity<>("Customer not found", HttpStatus.NOT_FOUND);
         }
@@ -143,6 +144,7 @@ public class OrderController {
             return new ResponseEntity<>("Order not found", HttpStatus.NOT_FOUND);
         }
 
+        // Получаем существующий заказ
         Order existingOrder = orderService.getOrder(tenantId, order.getId());
 
         // Обновляем разрешенные поля
@@ -175,9 +177,11 @@ public class OrderController {
             return new ResponseEntity<>("Tenant not found", HttpStatus.NOT_FOUND);
         }
 
+        // Проверка существования order
         if (!orderService.existsByTenantIdAndId(tenantId, orderId)) {
             return new ResponseEntity<>("Order not found", HttpStatus.NOT_FOUND);
         }
+
         // Проверка валидности статуса
         try {
             OrderStatus.valueOf(newStatus.toUpperCase());
@@ -189,6 +193,7 @@ public class OrderController {
         Order order = orderService.getOrder(tenantId, orderId);
         String oldStatus = order.getStatus().name();
 
+        // Сохраняем историю перед изменением статуса
         orderService.createOrderHistory(order, oldStatus, newStatus);
 
         // Обновляем статус

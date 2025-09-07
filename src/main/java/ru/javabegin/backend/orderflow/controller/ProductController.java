@@ -5,6 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.javabegin.backend.orderflow.entity.Customer;
 import ru.javabegin.backend.orderflow.entity.Product;
 import ru.javabegin.backend.orderflow.entity.Tenant;
 import ru.javabegin.backend.orderflow.service.ProductService;
@@ -42,7 +43,7 @@ public class ProductController {
             @PathVariable Long productId){
         Product product = null;
         try {
-             product = productService.getProductById(tenantId, productId);
+             product = productService.getProductById(productId,tenantId);
         } catch (NoSuchElementException e) { // если объект не будет найден
             e.printStackTrace();
             return new ResponseEntity("id=" + productId + " not found", HttpStatus.NOT_FOUND);
@@ -86,10 +87,9 @@ public class ProductController {
     }
 
     //4) Изменение продукта
-    @PutMapping("/{productId}")
+    @PutMapping("/update")
     public ResponseEntity<?> updateProduct(
             @PathVariable Long tenantId,
-            @PathVariable Long productId,
             @RequestBody Product product){
 
         // Проверка обязательных полей
@@ -112,7 +112,17 @@ public class ProductController {
                     .body("Ошибка: Цена должна быть больше 0");
         }
 
-        return ResponseEntity.ok(productService.updateProduct(tenantId, productId, product));
+        Product existingProduct = productService.getProductById(product.getId(),tenantId);
+        if(!existingProduct.getTenant().getId().equals(tenantId)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product does not belong to this tenant");
+        }
+        existingProduct.setName(product.getName());
+        existingProduct.setPrice(product.getPrice());
+        existingProduct.setCategory(product.getCategory());
+
+        Product updatedProduct = productService.updateProduct(existingProduct);
+
+        return ResponseEntity.ok(updatedProduct);
     }
 
     //5) Удаление продукта

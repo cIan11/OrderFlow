@@ -30,7 +30,7 @@ public class TenantController {
         Tenant tenant = null;
         try {
              tenant = tenantService.findById(id);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (NoSuchElementException e) {
             return new ResponseEntity("Tenant with id: "+id+" not found",HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(tenant);

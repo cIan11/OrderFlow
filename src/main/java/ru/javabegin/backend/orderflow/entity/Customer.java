@@ -1,5 +1,6 @@
 package ru.javabegin.backend.orderflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class Customer extends BaseEntity {
     //done
     //Покупатель и базовая информация о нем
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private Tenant tenant;
 
     private String name;

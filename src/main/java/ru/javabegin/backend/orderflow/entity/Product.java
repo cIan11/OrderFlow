@@ -1,5 +1,6 @@
 package ru.javabegin.backend.orderflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +21,7 @@ import java.util.List;
 public class Product extends  BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private Tenant tenant;
 
     private String name;
@@ -27,9 +29,6 @@ public class Product extends  BaseEntity {
     private BigDecimal price;
 
     private String category;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems = new ArrayList<>();
 
     @Override
     public String toString() {
