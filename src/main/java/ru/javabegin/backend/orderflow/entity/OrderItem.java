@@ -1,5 +1,6 @@
 package ru.javabegin.backend.orderflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public class OrderItem extends BaseEntity {
     //Учитываем, что стоимость товара может поменяться
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @JsonIgnore
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,9 +32,28 @@ public class OrderItem extends BaseEntity {
     private Integer quantity;
 
     //цена на момент покупки
-    private BigDecimal price;
+    @Column(name = "price")
+    private BigDecimal purchasePrice;
 
     @Column(name = "item_status")
     @Enumerated(EnumType.STRING)
     private ItemStatus status;
+
+    // Метод для получения актуальной цены
+    public BigDecimal getEffectivePrice() {
+        if (order != null && order.getStatus() == OrderStatus.CART) {
+            // Для корзины - текущая цена продукта
+            return product != null ? product.getPrice() : BigDecimal.ZERO;
+        } else {
+            // Для заказа - зафиксированная цена
+            return purchasePrice != null ? purchasePrice : BigDecimal.ZERO;
+        }
+    }
+
+    // Метод для получения общей стоимости позиции
+    public BigDecimal getTotalPrice() {
+        BigDecimal price = getEffectivePrice();
+        Integer qty = quantity != null ? quantity : 0;
+        return price.multiply(BigDecimal.valueOf(qty));
+    }
 }

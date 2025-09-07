@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.javabegin.backend.orderflow.entity.Customer;
-import ru.javabegin.backend.orderflow.entity.Order;
-import ru.javabegin.backend.orderflow.entity.OrderHistory;
-import ru.javabegin.backend.orderflow.entity.Tenant;
+import ru.javabegin.backend.orderflow.entity.*;
+import ru.javabegin.backend.orderflow.enums.ItemStatus;
 import ru.javabegin.backend.orderflow.enums.OrderStatus;
 import ru.javabegin.backend.orderflow.service.CustomerService;
 import ru.javabegin.backend.orderflow.service.OrderService;
+import ru.javabegin.backend.orderflow.service.ProductService;
 import ru.javabegin.backend.orderflow.service.TenantService;
 
 import java.math.BigDecimal;
@@ -27,6 +26,7 @@ public class OrderController {
     private OrderService orderService;
     private CustomerService customerService;
     private TenantService tenantService;
+    private ProductService productService;
 
     //1) Получить все заказы (с фильтрами по статусу, дате, клиенту)
     @GetMapping("/all")
@@ -99,24 +99,46 @@ public class OrderController {
             return new ResponseEntity<>("Order must contain at least one item", HttpStatus.BAD_REQUEST);
         }
 
-        // Проверка существования customer и его принадлежности к tenant
+        // Проверка существования customer
         Long customerId = order.getCustomer().getId();
         if (!customerService.existsByTenantIdAndId(tenantId, customerId)) {
             return new ResponseEntity<>("Customer not found or doesn't belong to tenant", HttpStatus.NOT_FOUND);
         }
 
-        // Установка tenant и дат
-        Tenant tenant = new Tenant();
-        tenant.setId(tenantId);
-        order.setTenant(tenant);
+        // Проверка существования продуктов
+        for (OrderItem item : order.getOrderItems()) {
+            if (!productService.existsByIdAndTenantId(item.getProduct().getId(), tenantId)) {
+                return new ResponseEntity<>("Product with id=" + item.getProduct().getId() + " not found", HttpStatus.NOT_FOUND);
+            }
+        }
 
+        // Установка tenant и дат
+        Tenant tenant = tenantService.findById(tenantId);
+        Customer customer = customerService.findById(tenantId, customerId);
+
+        order.setTenant(tenant);
+        order.setCustomer(customer);
+        order.setStatus(OrderStatus.CART);
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
 
-        // Расчет общей суммы
-        BigDecimal totalPrice = order.getOrderItems().stream()
-                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalPrice = order.getTotalPrice();
+
+        // Устанавливаем связь и загружаем продукты
+        for (OrderItem item : order.getOrderItems()) {
+            item.setOrder(order);
+            item.setStatus(ItemStatus.RESERVED);
+
+            Product product = productService.getProductById(tenantId, item.getProduct().getId());
+            item.setProduct(product);
+
+            // Устанавливаем цену
+            item.setPurchasePrice(product.getPrice());
+
+            // Рассчитываем стоимость позиции
+            BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+            totalPrice = totalPrice.add(itemTotal);
+        }
         order.setTotalPrice(totalPrice);
 
         Order savedOrder = orderService.save(order);
@@ -182,7 +204,7 @@ public class OrderController {
             return new ResponseEntity<>("Order not found", HttpStatus.NOT_FOUND);
         }
 
-        // Проверка валидности статуса
+        // Проверка статуса
         try {
             OrderStatus.valueOf(newStatus.toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -193,6 +215,14 @@ public class OrderController {
         Order order = orderService.getOrder(tenantId, orderId);
         String oldStatus = order.getStatus().name();
 
+
+        //фиксация цены при переходе в другой статус
+        if(order.getStatus()==OrderStatus.CART && !newStatus.equals("CART")){
+            for(OrderItem orderItem : order.getOrderItems()) {
+                orderItem.setPurchasePrice(orderItem.getProduct().getPrice());
+            }
+            order.setTotalPrice(order.calculateTotalPrice());
+        }
         // Сохраняем историю перед изменением статуса
         orderService.createOrderHistory(order, oldStatus, newStatus);
 

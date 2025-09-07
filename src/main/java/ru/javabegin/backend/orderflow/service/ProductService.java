@@ -7,6 +7,7 @@ import ru.javabegin.backend.orderflow.entity.Product;
 import ru.javabegin.backend.orderflow.repository.ProductRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
@@ -21,8 +22,9 @@ public class ProductService {
         return productRepository.findByTenantIdAndCategoryOrderByNameAsc(tenantId,category);
     }
 
-    public Product getProductById(Long productId,Long tenantId){
-        return productRepository.findByIdAndTenantId(productId,tenantId).get();
+    public Product getProductById(Long tenantId, Long productId) {
+        return productRepository.findByIdAndTenantId(productId, tenantId)
+                .orElseThrow(() -> new NoSuchElementException("Product with id=" + productId + " not found for tenant=" + tenantId));
     }
 
     public Product createProduct(Product product){
@@ -36,6 +38,10 @@ public class ProductService {
     public void deleteProductById(Long tenantId, Long productId){
        Product product = productRepository.findByIdAndTenantId(tenantId,productId).get();
        productRepository.delete(product);
+    }
+
+    public boolean existsByIdAndTenantId(Long productId, Long tenantId) {
+        return productRepository.existsByIdAndTenantId(productId, tenantId);
     }
 
 }

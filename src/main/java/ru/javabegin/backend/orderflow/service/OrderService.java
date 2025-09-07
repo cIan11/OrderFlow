@@ -22,9 +22,6 @@ public class OrderService {
         return orderRepository.findByParams(tenantId,status,customerId,dateFrom,dateTo);
     }
 
-    public Order findById(Long id, Long tenantId){
-        return orderRepository.findById(id).get();
-    }
     public Order getOrder(Long tenantId, Long orderId) {
         return orderRepository.findByTenantIdAndId(tenantId, orderId).get();
     }

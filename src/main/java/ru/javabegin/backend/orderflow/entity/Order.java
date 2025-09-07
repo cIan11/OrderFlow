@@ -35,7 +35,7 @@ public class Order extends BaseEntity {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private OrderStatus status = OrderStatus.CART;
+    private OrderStatus status = OrderStatus.CART; //По дефолту в корзине
 
     @Column(name = "total_price")
     private BigDecimal totalPrice = BigDecimal.ZERO;
@@ -46,12 +46,17 @@ public class Order extends BaseEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "order")
     private List<OrderHistory> orderHistory = new ArrayList<>();
 
-
+    // Метод для пересчета общей стоимости
+    public BigDecimal calculateTotalPrice() {
+        return orderItems.stream()
+                .map(OrderItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
 }

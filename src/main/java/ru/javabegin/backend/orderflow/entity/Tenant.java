@@ -1,5 +1,6 @@
 package ru.javabegin.backend.orderflow.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class Tenant extends BaseEntity {
     private String domain;
 
     @OneToMany(mappedBy = "tenant")
-    //Тут проперти поставить
+    @JsonIgnore
     private List<Product> products = new ArrayList<>();
 
     @Override
