@@ -10,6 +10,7 @@ import ru.javabegin.backend.orderflow.repository.OrderRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -18,7 +19,7 @@ public class OrderService {
     private OrderRepository orderRepository;
     private OrderHistoryRepository orderHistoryRepository;
 
-    public List<Order> getOrdersByParams(Long tenantId, String status, Long customerId, LocalDateTime dateFrom, LocalDateTime dateTo){
+    public List<Order> getOrdersByParams(Long tenantId, OrderStatus status, Long customerId, Date dateFrom, Date dateTo){
         return orderRepository.findByParams(tenantId,status,customerId,dateFrom,dateTo);
     }
 

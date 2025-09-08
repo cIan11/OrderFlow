@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.javabegin.backend.orderflow.entity.Order;
+import ru.javabegin.backend.orderflow.enums.OrderStatus;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,14 +24,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     )
     List<Order> findByParams(
             @Param("tenantId") Long tenantId,
-            @Param("status") String status,
+            @Param("status") OrderStatus status,
             @Param("customerId") Long customerId,
-            @Param("dateFrom") LocalDateTime dateFrom,
-            @Param("dateTo") LocalDateTime dateTo
+            @Param("dateFrom") Date dateFrom,
+            @Param("dateTo") Date dateTo
     );
     Optional<Order> findByTenantIdAndId(Long tenantId, Long id);
 
     boolean existsByTenantIdAndId(Long tenantId, Long id);
 
-    List<Order> findByTenantId(Long tenantId);
 }

@@ -1,6 +1,7 @@
 package ru.javabegin.backend.orderflow.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Tenant extends BaseEntity {
     //Tenant = магазин
     //Пробую реализовать логику мультитенатности (multi_tenancy) для хранения всех клиентов в 1 бд, но чтобы

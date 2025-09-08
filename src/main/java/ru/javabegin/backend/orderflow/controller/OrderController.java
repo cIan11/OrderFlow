@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -33,8 +34,8 @@ public class OrderController {
     public ResponseEntity<?> getOrders(
             @PathVariable Long tenantId,
             @RequestParam(required = false) Long customerId,
-            @RequestParam(required = false) LocalDateTime dateFrom,
-            @RequestParam(required = false) LocalDateTime dateTo,
+            @RequestParam(required = false) Date dateFrom,
+            @RequestParam(required = false) Date dateTo,
             @RequestParam(required = false) String status) {
 
         // Проверка существования tenant
@@ -47,17 +48,18 @@ public class OrderController {
             return new ResponseEntity<>("Customer not found", HttpStatus.NOT_FOUND);
         }
 
-        // Проверка статуса если указан
+
+        OrderStatus orderStatus = null;
         if (status != null) {
             try {
-                OrderStatus.valueOf(status.toUpperCase());
+                orderStatus = OrderStatus.valueOf(status.toUpperCase());
             } catch (IllegalArgumentException e) {
                 return new ResponseEntity<>("Invalid status. Valid values: " +
                         Arrays.toString(OrderStatus.values()), HttpStatus.BAD_REQUEST);
             }
         }
 
-        return ResponseEntity.ok(orderService.getOrdersByParams(tenantId, status, customerId, dateFrom, dateTo));
+        return ResponseEntity.ok(orderService.getOrdersByParams(tenantId, orderStatus, customerId, dateFrom, dateTo));
     }
 
     //2) Получить заказ по id
