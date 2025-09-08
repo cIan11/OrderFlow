@@ -19,8 +19,13 @@ public class OrderService {
     private OrderRepository orderRepository;
     private OrderHistoryRepository orderHistoryRepository;
 
-    public List<Order> getOrdersByParams(Long tenantId, OrderStatus status, Long customerId, Date dateFrom, Date dateTo){
-        return orderRepository.findByParams(tenantId,status,customerId,dateFrom,dateTo);
+    public List<Order> getOrdersByParams(Long tenantId, OrderStatus status, Long customerId,
+                                         LocalDateTime dateFrom, LocalDateTime dateTo) {
+        String statusStr = status != null ? status.name() : null;
+        String dateFromStr = dateFrom != null ? dateFrom.toString() : null;
+        String dateToStr = dateTo != null ? dateTo.toString() : null;
+
+        return orderRepository.findByParamsNative(tenantId, statusStr, customerId, dateFromStr, dateToStr);
     }
 
     public Order getOrder(Long tenantId, Long orderId) {

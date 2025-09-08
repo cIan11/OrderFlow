@@ -13,7 +13,6 @@ import ru.javabegin.backend.orderflow.service.ProductService;
 import ru.javabegin.backend.orderflow.service.TenantService;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
@@ -34,8 +33,8 @@ public class OrderController {
     public ResponseEntity<?> getOrders(
             @PathVariable Long tenantId,
             @RequestParam(required = false) Long customerId,
-            @RequestParam(required = false) Date dateFrom,
-            @RequestParam(required = false) Date dateTo,
+            @RequestParam(required = false) LocalDateTime dateFrom,
+            @RequestParam(required = false) LocalDateTime dateTo,
             @RequestParam(required = false) String status) {
 
         // Проверка существования tenant
@@ -83,34 +82,34 @@ public class OrderController {
 
     //3) Создать заказ (включая позиции)
     @PostMapping
-    public ResponseEntity<?> createOrder(
+    public ResponseEntity<Order> createOrder(
             @PathVariable Long tenantId,
             @RequestBody Order order) {
 
         // Проверка существования tenant
         if (!tenantService.existsById(tenantId)) {
-            return new ResponseEntity<>("Tenant not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity("Tenant not found", HttpStatus.NOT_FOUND);
         }
 
         // Проверки обязательных полей
         if (order.getCustomer() == null || order.getCustomer().getId() == null) {
-            return new ResponseEntity<>("Customer is required", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Customer is required", HttpStatus.BAD_REQUEST);
         }
 
         if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
-            return new ResponseEntity<>("Order must contain at least one item", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Order must contain at least one item", HttpStatus.BAD_REQUEST);
         }
 
         // Проверка существования customer
         Long customerId = order.getCustomer().getId();
         if (!customerService.existsByTenantIdAndId(tenantId, customerId)) {
-            return new ResponseEntity<>("Customer not found or doesn't belong to tenant", HttpStatus.NOT_FOUND);
+            return new ResponseEntity("Customer not found or doesn't belong to tenant", HttpStatus.NOT_FOUND);
         }
 
         // Проверка существования продуктов
         for (OrderItem item : order.getOrderItems()) {
             if (!productService.existsByIdAndTenantId(item.getProduct().getId(), tenantId)) {
-                return new ResponseEntity<>("Product with id=" + item.getProduct().getId() + " not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity("Product with id=" + item.getProduct().getId() + " not found", HttpStatus.NOT_FOUND);
             }
         }
 
@@ -121,6 +120,7 @@ public class OrderController {
         order.setTenant(tenant);
         order.setCustomer(customer);
         order.setStatus(OrderStatus.CART);
+
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
 
@@ -144,7 +144,7 @@ public class OrderController {
         order.setTotalPrice(totalPrice);
 
         Order savedOrder = orderService.save(order);
-        return new ResponseEntity<>(savedOrder, HttpStatus.CREATED);
+        return new ResponseEntity(savedOrder, HttpStatus.CREATED);
     }
 
     //4) Обновить заказ (адрес доставки, клиент)

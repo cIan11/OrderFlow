@@ -15,19 +15,19 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    @Query(value = "select o from Order o where " +
-            "o.tenant.id = :tenantId and" +
-            "(:status is null or o.status=:status) and" +
-            "(:customerId is null or o.customer.id = :customerId) and" +
-            "(:dateFrom is null or o.createdAt>=:dateFrom) and" +
-            "(:dateTo is null or o.createdAt<=:dateTo)"
-    )
-    List<Order> findByParams(
+    @Query(value = "SELECT * FROM orders o WHERE " +
+            "o.tenant_id = :tenantId AND " +
+            "(:status IS NULL OR o.status = :status) AND " +
+            "(:customerId IS NULL OR o.customer_id = :customerId) AND " +
+            "(:dateFrom IS NULL OR o.created_at >= CAST(:dateFrom AS timestamp)) AND " +
+            "(:dateTo IS NULL OR o.created_at <= CAST(:dateTo AS timestamp))",
+            nativeQuery = true)
+    List<Order> findByParamsNative(
             @Param("tenantId") Long tenantId,
-            @Param("status") OrderStatus status,
+            @Param("status") String status,
             @Param("customerId") Long customerId,
-            @Param("dateFrom") Date dateFrom,
-            @Param("dateTo") Date dateTo
+            @Param("dateFrom") String dateFrom, // Изменяем на String
+            @Param("dateTo") String dateTo      // Изменяем на String
     );
     Optional<Order> findByTenantIdAndId(Long tenantId, Long id);
 
